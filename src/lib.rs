@@ -46,7 +46,6 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
                 match entry {
                     FormEntry::File(file) => {
                         let bytes = file.bytes().await?;
-                        let response = Response::ok("Got a file, thanks!")?;
                         let kv = ctx.kv("IMAGES")?;
                         kv.put("test", bytes)?.execute().await?;
 
@@ -55,6 +54,7 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
                         headers.append("Access-Control-Allow-Methods", "POST")?;
                         headers.append("Access-Control-Allow-Origin", "*")?;
 
+                        let response = Response::ok("Got a file, thanks!")?;
                         return Ok(response.with_headers(headers));
                     }
                     FormEntry::Field(_) => return Response::error("Bad Request", 400),
